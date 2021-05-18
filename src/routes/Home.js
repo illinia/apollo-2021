@@ -1,3 +1,4 @@
+/* eslint-disable import/no-anonymous-default-export */
 import React from 'react';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
@@ -9,6 +10,7 @@ const GET_MOVIES = gql`
     movies {
       id
       medium_cover_image
+      isLiked @client
     }
   }
 `
@@ -44,6 +46,15 @@ const Loading = styled.div`
   margin-top: 10px;
 `;
 
+const Movies = styled.div`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 25px;
+  width: 60%;
+  position: relative;
+  top: -50px;
+`;
+
 export default () => {
   const { loading, data } = useQuery(GET_MOVIES)
   return (
@@ -53,9 +64,12 @@ export default () => {
         <Subtitle>I love GraphQL</Subtitle>
       </Header>
       {loading && <Loading>Loading...</Loading>}
-      {!loading &&
-        data.movies &&
-        data.movies.map(m => <Movie key={m.id} id={m.id} />)}
+      <Movies>
+        {data?.movies?.map(m => (
+          <Movie
+            key={m.id} id={m.id} isLiked={m.isLiked} bg={m.medium_cover_image} />
+        ))}
+      </Movies>
     </Container>
   )
 }
